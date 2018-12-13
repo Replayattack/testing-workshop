@@ -1,5 +1,21 @@
-test('isPasswordAllowed only allows some passwords', () => {
+import {userToJSON, isPasswordAllowed} from '../auth'
+
+describe('isPasswordAllowed', () => {
   // here's where I'll demo things for you :)
+  const allowedPasswords = ['abcdefg123']
+  const disallowedPasswords = ['aaaaaaaaaaa']
+
+  allowedPasswords.forEach(password => {
+    it(`${password} is allowed`, () => {
+      expect(isPasswordAllowed(password)).toBe(true)
+    })
+  })
+
+  disallowedPasswords.forEach(password => {
+    it(`${password} is disallowed`, () => {
+      expect(isPasswordAllowed(password)).toBe(false)
+    })
+  })
 })
 
 test('userToJSON excludes secure properties', () => {
@@ -22,6 +38,28 @@ test('userToJSON excludes secure properties', () => {
   //   hash: 'some really long string',
   //   salt: 'some shorter string',
   // }
+
+  // Kent C. Dodds
+  // Avoid to test implementation details.
+  // Trying to avoid pocking holes in reality just if you can.
+  // This approach lets you communicate to who's looking this tests what parts
+  // of tests are important or related to each other.
+
+  const safeUser = {
+    username: 'bob',
+  }
+  const unsafeUser = {
+    exp: new Date(),
+    iat: new Date(),
+    hash: 'some really long string',
+    salt: 'some shorter string',
+  }
+  const testUser = {
+    ...safeUser,
+    ...unsafeUser,
+  }
+  const result = userToJSON(testUser)
+  expect(result).toEqual(safeUser)
 })
 
 //////// Elaboration & Feedback /////////
