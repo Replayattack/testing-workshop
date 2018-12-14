@@ -5,6 +5,19 @@
 // 4. create an async test that calls createJSON with whatever you want
 // 5. Make assertions that the axios.__mock.instance.post was called with what it should have been
 
+import axiosMock from 'axios'
+import {createJSON} from '../myjson'
+
+test('make a request to the myjson API with the given data', async () => {
+  const data = {message: 'Hello world!'}
+  const mockResponse = {data}
+  axiosMock.post.mockImplementationOnce(() => Promise.resolve(mockResponse))
+  const responseData = await createJSON(data)
+  expect(responseData).toEqual(mockResponse.data)
+  expect(axiosMock.post).toBeCalledTimes(1)
+  expect(axiosMock.post).toBeCalledWith('https://api.myjson.com/bins', data)
+})
+
 //////// Elaboration & Feedback /////////
 // When you've finished with the exercises:
 // 1. Copy the URL below into your browser and fill out the form
